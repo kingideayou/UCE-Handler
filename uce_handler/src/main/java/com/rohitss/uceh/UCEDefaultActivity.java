@@ -26,10 +26,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -47,11 +44,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * <b></b>
- * <p>This class is used to </p>
- * Created by Rohit.
- */
 public final class UCEDefaultActivity extends Activity {
     private File txtFile;
     private String strCurrentErrorLog;
@@ -128,23 +120,6 @@ public final class UCEDefaultActivity extends Activity {
         return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
     }
 
-    private String getVersionName(Context context) {
-        try {
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            return packageInfo.versionName;
-        } catch (Exception e) {
-            return "Unknown";
-        }
-    }
-
-    private String getActivityLogFromIntent(Intent intent) {
-        return intent.getStringExtra(UCEHandler.EXTRA_ACTIVITY_LOG);
-    }
-
-    private String getStackTraceFromIntent(Intent intent) {
-        return intent.getStringExtra(UCEHandler.EXTRA_STACK_TRACE);
-    }
-
     private void emailErrorLog() {
         saveErrorLogToFile(false);
         String errorLog = getAllErrorDetailsFromIntent(UCEDefaultActivity.this, getIntent());
@@ -214,67 +189,10 @@ public final class UCEDefaultActivity extends Activity {
     }
 
     private String getAllErrorDetailsFromIntent(Context context, Intent intent) {
+        ExceptionInfoBean exceptionInfoBean = intent.getParcelableExtra(UCEHandler.EXTRA_EXCEPTION_INFO);
+
         if (TextUtils.isEmpty(strCurrentErrorLog)) {
-            String LINE_SEPARATOR = "\n";
-            StringBuilder errorReport = new StringBuilder();
-            errorReport.append("***** UCE HANDLER Library ");
-            errorReport.append("\n***** by Rohit Surwase \n");
-            errorReport.append("\n***** DEVICE INFO \n");
-            errorReport.append("Brand: ");
-            errorReport.append(Build.BRAND);
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append("Device: ");
-            errorReport.append(Build.DEVICE);
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append("Model: ");
-            errorReport.append(Build.MODEL);
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append("Manufacturer: ");
-            errorReport.append(Build.MANUFACTURER);
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append("Product: ");
-            errorReport.append(Build.PRODUCT);
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append("SDK: ");
-            errorReport.append(Build.VERSION.SDK);
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append("Release: ");
-            errorReport.append(Build.VERSION.RELEASE);
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append("\n***** APP INFO \n");
-            String versionName = getVersionName(context);
-            errorReport.append("Version: ");
-            errorReport.append(versionName);
-            errorReport.append(LINE_SEPARATOR);
-            Date currentDate = new Date();
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-            String firstInstallTime = getFirstInstallTimeAsString(context, dateFormat);
-            if (!TextUtils.isEmpty(firstInstallTime)) {
-                errorReport.append("Installed On: ");
-                errorReport.append(firstInstallTime);
-                errorReport.append(LINE_SEPARATOR);
-            }
-            String lastUpdateTime = getLastUpdateTimeAsString(context, dateFormat);
-            if (!TextUtils.isEmpty(lastUpdateTime)) {
-                errorReport.append("Updated On: ");
-                errorReport.append(lastUpdateTime);
-                errorReport.append(LINE_SEPARATOR);
-            }
-            errorReport.append("Current Date: ");
-            errorReport.append(dateFormat.format(currentDate));
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append("\n***** ERROR LOG \n");
-            errorReport.append(getStackTraceFromIntent(intent));
-            errorReport.append(LINE_SEPARATOR);
-            String activityLog = getActivityLogFromIntent(intent);
-            errorReport.append(LINE_SEPARATOR);
-            if (activityLog != null) {
-                errorReport.append("\n***** USER ACTIVITIES \n");
-                errorReport.append("User Activities: ");
-                errorReport.append(activityLog);
-                errorReport.append(LINE_SEPARATOR);
-            }
-            errorReport.append("\n***** END OF LOG *****\n");
+            StringBuilder errorReport = UCEHandlerHelper.getExceptionInfoString(context, exceptionInfoBean);
             strCurrentErrorLog = errorReport.toString();
             return strCurrentErrorLog;
         } else {
@@ -282,37 +200,8 @@ public final class UCEDefaultActivity extends Activity {
         }
     }
 
-    private String getFirstInstallTimeAsString(Context context, DateFormat dateFormat) {
-        long firstInstallTime;
-        try {
-            firstInstallTime = context
-                    .getPackageManager()
-                    .getPackageInfo(context.getPackageName(), 0)
-                    .firstInstallTime;
-            return dateFormat.format(new Date(firstInstallTime));
-        } catch (PackageManager.NameNotFoundException e) {
-            return "";
-        }
-    }
-
-    private String getLastUpdateTimeAsString(Context context, DateFormat dateFormat) {
-        long lastUpdateTime;
-        try {
-            lastUpdateTime = context
-                    .getPackageManager()
-                    .getPackageInfo(context.getPackageName(), 0)
-                    .lastUpdateTime;
-            return dateFormat.format(new Date(lastUpdateTime));
-        } catch (PackageManager.NameNotFoundException e) {
-            return "";
-        }
-    }
-
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 }
