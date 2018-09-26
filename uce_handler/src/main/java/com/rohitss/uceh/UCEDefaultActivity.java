@@ -18,21 +18,19 @@
 package com.rohitss.uceh;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,96 +42,27 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public final class UCEDefaultActivity extends Activity {
-    private File txtFile;
+public final class UCEDefaultActivity extends AppCompatActivity {
     private String strCurrentErrorLog;
 
     @SuppressLint("PrivateResource")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(android.R.style.Theme_Holo_Light_DarkActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.default_error_activity);
-        findViewById(R.id.button_close_app).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UCEHandler.closeApplication(UCEDefaultActivity.this);
-            }
-        });
-        findViewById(R.id.button_copy_error_log).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                copyErrorToClipboard();
-            }
-        });
-        findViewById(R.id.button_share_error_log).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareErrorLog();
-            }
-        });
-        findViewById(R.id.button_save_error_log).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveErrorLogToFile(true);
-            }
-        });
-        findViewById(R.id.button_email_error_log).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                emailErrorLog();
-            }
-        });
-        findViewById(R.id.button_view_error_log).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog dialog = new AlertDialog.Builder(UCEDefaultActivity.this)
-                        .setTitle("Error Log")
-                        .setMessage(getAllErrorDetailsFromIntent(UCEDefaultActivity.this, getIntent()))
-                        .setPositiveButton("Copy Log & Close",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        copyErrorToClipboard();
-                                        dialog.dismiss();
-                                    }
-                                })
-                        .setNeutralButton("Close",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                })
-                        .show();
-                TextView textView = dialog.findViewById(android.R.id.message);
-                if (textView != null) {
-                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-                }
-            }
-        });
+
+        Toolbar mToolbarTb = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbarTb);
+
+        String errorInfo = getPureErrorDetailsFromIntent(this, getIntent());
+        TextView tvStackTrace = findViewById(R.id.tv_stack_trace);
+        tvStackTrace.setText(errorInfo);
     }
 
     public String getApplicationName(Context context) {
         ApplicationInfo applicationInfo = context.getApplicationInfo();
         int stringId = applicationInfo.labelRes;
         return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
-    }
-
-    private void emailErrorLog() {
-        saveErrorLogToFile(false);
-        String errorLog = getAllErrorDetailsFromIntent(UCEDefaultActivity.this, getIntent());
-        String[] emailAddressArray = UCEHandler.COMMA_SEPARATED_EMAIL_ADDRESSES.trim().split("\\s*,\\s*");
-        Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-        emailIntent.setType("plain/text");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, emailAddressArray);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, getApplicationName(UCEDefaultActivity.this) + " Application Crash Error Log");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.email_welcome_note) + errorLog);
-        if (txtFile.exists()) {
-            Uri filePath = Uri.fromFile(txtFile);
-            emailIntent.putExtra(Intent.EXTRA_STREAM, filePath);
-        }
-        startActivity(Intent.createChooser(emailIntent, "Email Error Log"));
     }
 
     private void saveErrorLogToFile(boolean isShowToast) {
@@ -144,13 +73,13 @@ public final class UCEDefaultActivity extends Activity {
             String strCurrentDate = dateFormat.format(currentDate);
             strCurrentDate = strCurrentDate.replace(" ", "_");
             String errorLogFileName = getApplicationName(UCEDefaultActivity.this) + "_Error-Log_" + strCurrentDate;
-            String errorLog = getAllErrorDetailsFromIntent(UCEDefaultActivity.this, getIntent());
+            String errorLog = getPureErrorDetailsFromIntent(UCEDefaultActivity.this, getIntent());
             String fullPath = Environment.getExternalStorageDirectory() + "/AppErrorLogs_UCEH/";
             FileOutputStream outputStream;
             try {
                 File file = new File(fullPath);
                 file.mkdir();
-                txtFile = new File(fullPath + errorLogFileName + ".txt");
+                File txtFile = new File(fullPath + errorLogFileName + ".txt");
                 txtFile.createNewFile();
                 outputStream = new FileOutputStream(txtFile);
                 outputStream.write(errorLog.getBytes());
@@ -169,17 +98,19 @@ public final class UCEDefaultActivity extends Activity {
     }
 
     private void shareErrorLog() {
-        String errorLog = getAllErrorDetailsFromIntent(UCEDefaultActivity.this, getIntent());
+        if (TextUtils.isEmpty(strCurrentErrorLog)) {
+            strCurrentErrorLog = getPureErrorDetailsFromIntent(UCEDefaultActivity.this, getIntent());
+        }
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("text/plain");
         share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         share.putExtra(Intent.EXTRA_SUBJECT, "Application Crash Error Log");
-        share.putExtra(Intent.EXTRA_TEXT, errorLog);
+        share.putExtra(Intent.EXTRA_TEXT, strCurrentErrorLog);
         startActivity(Intent.createChooser(share, "Share Error Log"));
     }
 
     private void copyErrorToClipboard() {
-        String errorInformation = getAllErrorDetailsFromIntent(UCEDefaultActivity.this, getIntent());
+        String errorInformation = getPureErrorDetailsFromIntent(UCEDefaultActivity.this, getIntent());
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         if (clipboard != null) {
             ClipData clip = ClipData.newPlainText("View Error Log", errorInformation);
@@ -188,9 +119,8 @@ public final class UCEDefaultActivity extends Activity {
         }
     }
 
-    private String getAllErrorDetailsFromIntent(Context context, Intent intent) {
+    private String getPureErrorDetailsFromIntent(Context context, Intent intent) {
         ExceptionInfoBean exceptionInfoBean = intent.getParcelableExtra(UCEHandler.EXTRA_EXCEPTION_INFO);
-
         if (TextUtils.isEmpty(strCurrentErrorLog)) {
             StringBuilder errorReport = UCEHandlerHelper.getExceptionInfoString(context, exceptionInfoBean);
             strCurrentErrorLog = errorReport.toString();
@@ -203,5 +133,24 @@ public final class UCEDefaultActivity extends Activity {
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.crash_info_options, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int i = item.getItemId();
+        if (i == R.id.action_copy) {
+            copyErrorToClipboard();
+        } else if (i == R.id.action_save) {
+            saveErrorLogToFile(true);
+        } else if (i == R.id.action_share) {
+            shareErrorLog();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

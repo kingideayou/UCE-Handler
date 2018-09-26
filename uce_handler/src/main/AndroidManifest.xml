@@ -5,6 +5,7 @@
     <application>
         <activity
             android:name=".UCEDefaultActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:process=":error_activity"/>
     </application>
 

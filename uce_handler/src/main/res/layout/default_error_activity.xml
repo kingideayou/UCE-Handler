@@ -1,89 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="16dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/uce_background"
+              android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fadeScrollbars="false"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
         android:scrollbars="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_stack_trace"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/ask_for_error_log"
-                android:textColor="#212121"
-                android:textSize="18sp"/>
+                android:layout_marginBottom="@dimen/margin_8dp"
+                android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginRight="@dimen/default_margin"
+                android:layout_marginTop="@dimen/margin_8dp"
+                android:textColor="@color/textColor_sub"
+                android:textSize="@dimen/recovery_default_text_size"/>
 
-            <Button
-                android:id="@+id/button_view_error_log"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="View Error Log"
-                android:textColor="#212121"/>
-
-            <Button
-                android:id="@+id/button_copy_error_log"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Copy Error Log"
-                android:textColor="#212121"/>
-
-            <Button
-                android:id="@+id/button_share_error_log"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Share Error Log"
-                android:textColor="#212121"/>
-
-            <Button
-                android:id="@+id/button_email_error_log"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Email Error Log"
-                android:textColor="#212121"/>
-
-            <Button
-                android:id="@+id/button_save_error_log"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Save Error Log"
-                android:textColor="#212121"/>
-
-            <Button
-                android:id="@+id/button_close_app"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Close App"
-                android:textColor="#212121"/>
         </LinearLayout>
+
     </ScrollView>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:text="@string/copyright_info"
-        android:textColor="#212121"
-        android:textSize="14sp"/>
 </LinearLayout>
