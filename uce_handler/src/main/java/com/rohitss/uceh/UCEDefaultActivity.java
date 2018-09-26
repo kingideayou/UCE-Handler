@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -43,9 +44,9 @@ import java.util.Date;
 import java.util.Locale;
 
 public final class UCEDefaultActivity extends AppCompatActivity {
-    private String strCurrentErrorLog;
+    private String pureStrCurrentErrorLog;
 
-    @SuppressLint("PrivateResource")
+    @SuppressLint({"PrivateResource", "SetTextI18n"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,22 +55,30 @@ public final class UCEDefaultActivity extends AppCompatActivity {
         Toolbar mToolbarTb = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbarTb);
 
-        String errorInfo = getPureErrorDetailsFromIntent(this, getIntent());
+        TextView tvType = findViewById(R.id.tv_type);
+        TextView tvMethodName = findViewById(R.id.tv_method_name);
+        TextView tvLineNumber = findViewById(R.id.tv_line_number);
+        TextView tvCause = findViewById(R.id.tv_cause);
         TextView tvStackTrace = findViewById(R.id.tv_stack_trace);
-        tvStackTrace.setText(errorInfo);
-    }
 
-    public String getApplicationName(Context context) {
-        ApplicationInfo applicationInfo = context.getApplicationInfo();
-        int stringId = applicationInfo.labelRes;
-        return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
+        ExceptionInfoBean exceptionInfoBean = getIntent().getParcelableExtra(UCEHandler.EXTRA_EXCEPTION_INFO);
+        if (exceptionInfoBean == null) {
+            return;
+        }
+        String errorInfo = getExceptionInfoString(this, exceptionInfoBean);
+        tvType.setText(Html.fromHtml("ExceptionType: <br/>" + getHtmlCodeBlueStr(exceptionInfoBean.getExceptionType())));
+        String methodName = getHtmlCodeBlueStr(exceptionInfoBean.getClassName()) + "." + getHtmlCodeStr(exceptionInfoBean.getMethodName());
+        tvMethodName.setText(Html.fromHtml("MethodName: <br/>" + methodName));
+        tvLineNumber.setText(Html.fromHtml(getHtmlCodeBlueStr("LineNumber: " + exceptionInfoBean.getLineNumber())));
+        tvCause.setText(exceptionInfoBean.getCause());
+        tvStackTrace.setText(errorInfo);
     }
 
     private void saveErrorLogToFile(boolean isShowToast) {
         Boolean isSDPresent = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
         if (isSDPresent && isExternalStorageWritable()) {
             Date currentDate = new Date();
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             String strCurrentDate = dateFormat.format(currentDate);
             strCurrentDate = strCurrentDate.replace(" ", "_");
             String errorLogFileName = getApplicationName(UCEDefaultActivity.this) + "_Error-Log_" + strCurrentDate;
@@ -98,14 +107,14 @@ public final class UCEDefaultActivity extends AppCompatActivity {
     }
 
     private void shareErrorLog() {
-        if (TextUtils.isEmpty(strCurrentErrorLog)) {
-            strCurrentErrorLog = getPureErrorDetailsFromIntent(UCEDefaultActivity.this, getIntent());
+        if (TextUtils.isEmpty(pureStrCurrentErrorLog)) {
+            pureStrCurrentErrorLog = getPureErrorDetailsFromIntent(UCEDefaultActivity.this, getIntent());
         }
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("text/plain");
         share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         share.putExtra(Intent.EXTRA_SUBJECT, "Application Crash Error Log");
-        share.putExtra(Intent.EXTRA_TEXT, strCurrentErrorLog);
+        share.putExtra(Intent.EXTRA_TEXT, pureStrCurrentErrorLog);
         startActivity(Intent.createChooser(share, "Share Error Log"));
     }
 
@@ -121,18 +130,40 @@ public final class UCEDefaultActivity extends AppCompatActivity {
 
     private String getPureErrorDetailsFromIntent(Context context, Intent intent) {
         ExceptionInfoBean exceptionInfoBean = intent.getParcelableExtra(UCEHandler.EXTRA_EXCEPTION_INFO);
-        if (TextUtils.isEmpty(strCurrentErrorLog)) {
-            StringBuilder errorReport = UCEHandlerHelper.getExceptionInfoString(context, exceptionInfoBean);
-            strCurrentErrorLog = errorReport.toString();
-            return strCurrentErrorLog;
+        if (TextUtils.isEmpty(pureStrCurrentErrorLog)) {
+            StringBuilder errorReport = UCEHandlerHelper.getFullExceptionInfoString(context, exceptionInfoBean);
+            pureStrCurrentErrorLog = errorReport.toString();
+            return pureStrCurrentErrorLog;
         } else {
-            return strCurrentErrorLog;
+            return pureStrCurrentErrorLog;
         }
+    }
+
+    private String getExceptionInfoString(Context context, ExceptionInfoBean exceptionInfoBean) {
+        return UCEHandlerHelper.getExceptionInfoString(context, exceptionInfoBean).toString();
     }
 
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state);
+    }
+
+    public String getApplicationName(Context context) {
+        ApplicationInfo applicationInfo = context.getApplicationInfo();
+        int stringId = applicationInfo.labelRes;
+        return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
+    }
+
+    private static String getHtmlCodeStr(String string) {
+        return "<font color='#9976a8'>" + string + "</font>";
+    }
+
+    private static String getHtmlCodeBlueStr(String string) {
+        return "<font color='#6a98b9'>" + string + "</font>";
+    }
+
+    private static String getHtmlCodeBlueStr(int value) {
+        return getHtmlCodeBlueStr(Integer.toString(value));
     }
 
     @Override

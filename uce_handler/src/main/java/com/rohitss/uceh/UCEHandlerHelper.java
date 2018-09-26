@@ -25,6 +25,7 @@ import java.util.Locale;
 public class UCEHandlerHelper {
 
     private static final int MAX_STACK_TRACE_SIZE = 131071; //128 KB - 1
+    private static final String LINE_SEPARATOR = "\n";
 
     public static ExceptionInfoBean getExceptionInfoBean(Throwable throwable) {
         return getExceptionInfoBean(throwable, null);
@@ -86,31 +87,19 @@ public class UCEHandlerHelper {
                 .activityLogString(activityLogStringBuilder.toString());
     }
 
-    @NonNull
     public static StringBuilder getExceptionInfoString(Context context, ExceptionInfoBean exceptionInfoBean) {
-        String LINE_SEPARATOR = "\n";
+        return getExceptionInfoString(context, exceptionInfoBean, false);
+    }
+
+    static StringBuilder getFullExceptionInfoString(Context context, ExceptionInfoBean exceptionInfoBean) {
+        return getExceptionInfoString(context, exceptionInfoBean, true);
+    }
+
+    @NonNull
+    private static StringBuilder getExceptionInfoString(Context context, ExceptionInfoBean exceptionInfoBean, boolean useHeader) {
         StringBuilder errorReport = new StringBuilder();
-        errorReport.append("------------ UCE HANDLER Library ------------");
-        errorReport.append("\n------------ by NeXT ------------\n");
-        errorReport.append(LINE_SEPARATOR);
-        if (exceptionInfoBean != null) {
-            errorReport.append("Cause: ");
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append(exceptionInfoBean.getCause());
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append("Exception Type: ");
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append(exceptionInfoBean.getExceptionType());
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append("Class & Method Name: ");
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append(exceptionInfoBean.getClassName()).append(".").append(exceptionInfoBean.getMethodName());
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append("LineNumber: ").append(exceptionInfoBean.getLineNumber());
-            errorReport.append(LINE_SEPARATOR);
+        if (useHeader) {
+            getExceptionHeaderInfo(exceptionInfoBean, errorReport);
         }
         errorReport.append(LINE_SEPARATOR);
         errorReport.append("\n------------ ERROR LOG ------------\n");
@@ -121,8 +110,6 @@ public class UCEHandlerHelper {
         errorReport.append(LINE_SEPARATOR);
         if (exceptionInfoBean != null) {
             errorReport.append("\n------------ USER ACTIVITIES ------------\n");
-            errorReport.append(LINE_SEPARATOR);
-            errorReport.append("User Activities: ");
             errorReport.append(LINE_SEPARATOR);
             errorReport.append(exceptionInfoBean.getActivityLogString());
             errorReport.append(LINE_SEPARATOR);
@@ -157,7 +144,7 @@ public class UCEHandlerHelper {
         errorReport.append(versionName);
         errorReport.append(LINE_SEPARATOR);
         Date currentDate = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         String firstInstallTime = getFirstInstallTimeAsString(context, dateFormat);
         if (!TextUtils.isEmpty(firstInstallTime)) {
             errorReport.append("Installed On: ");
@@ -175,6 +162,31 @@ public class UCEHandlerHelper {
         errorReport.append(LINE_SEPARATOR);
         errorReport.append("\n------------ END OF LOG ------------\n");
         return errorReport;
+    }
+
+    private static void getExceptionHeaderInfo(ExceptionInfoBean exceptionInfoBean, @NonNull StringBuilder errorReport) {
+        errorReport.append("------------ UCE HANDLER Library ------------");
+        errorReport.append("\n------------ by NeXT ------------\n");
+        errorReport.append(LINE_SEPARATOR);
+        if (exceptionInfoBean != null) {
+            errorReport.append("Exception Type: ");
+            errorReport.append(LINE_SEPARATOR);
+            errorReport.append(exceptionInfoBean.getExceptionType());
+            errorReport.append(LINE_SEPARATOR);
+            errorReport.append(LINE_SEPARATOR);
+            errorReport.append("Class Name: ");
+            errorReport.append(LINE_SEPARATOR);
+            errorReport.append(exceptionInfoBean.getClassName()).append(".").append(exceptionInfoBean.getMethodName());
+            errorReport.append(LINE_SEPARATOR);
+            errorReport.append(LINE_SEPARATOR);
+            errorReport.append("LineNumber: ").append(exceptionInfoBean.getLineNumber());
+            errorReport.append(LINE_SEPARATOR);
+            errorReport.append(LINE_SEPARATOR);
+            errorReport.append("Cause: ");
+            errorReport.append(LINE_SEPARATOR);
+            errorReport.append(exceptionInfoBean.getCause());
+            errorReport.append(LINE_SEPARATOR);
+        }
     }
 
     private static String getVersionName(Context context) {
