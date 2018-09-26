@@ -4,16 +4,16 @@
     <item
         android:id="@+id/action_copy"
         android:orderInCategory="100"
-        android:title="复制"
+        android:title="Copy"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_share"
         android:orderInCategory="100"
-        android:title="分享"
+        android:title="Share"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_save"
         android:orderInCategory="100"
-        android:title="保存"
+        android:title="Save"
         app:showAsAction="never" />
 </menu>
