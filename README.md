@@ -8,6 +8,7 @@ Tracking down all exceptions is the crucial part of the development. We could ju
 
 Why should you use this library? Read the answer - [Handling Uncaught-Exceptions in Android](https://android.jlelse.eu/handling-uncaught-exceptions-in-android-d818ffb20181)
 
+![Example Image](http://ww1.sinaimg.cn/mw690/6db4aff6gy1fvn1nrp5qnj21905g0qse.jpg)
 ![Example Animation](https://github.com/RohitSurwase/UCE-Handler/raw/master/art/uce_feature.png)
 ![Example Animation](http://ww1.sinaimg.cn/mw690/6db4aff6gy1fvmyplertdg20ew0pn1kx.gif)
 
