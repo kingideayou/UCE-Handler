@@ -20,7 +20,9 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.0.2'
-    implementation project(':uce_handler')
+//    implementation project(':uce_handler')
 //    implementation project(':uce_handler_no_op')
+    debugImplementation 'com.github.kingideayou.UCE-Handler:uce_handler:1.5.0'
+    releaseImplementation 'com.github.kingideayou.UCE-Handler:uce_handler_no_op:1.5.0'
     implementation project(':ignore-dummy-module')
 }

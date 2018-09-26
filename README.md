@@ -49,7 +49,8 @@ In your Project's build.gradle file:
 In your Application's or Module's build.gradle file:
 
 	dependencies {
-	        compile 'com.github.RohitSurwase.UCE-Handler:uce_handler:1.3'
+            debugImplementation 'com.github.kingideayou.UCE-Handler:uce_handler:1.5.0'
+	        releaseImplementation 'com.github.kingideayou.UCE-Handler:uce_handler_no_op:1.5.0'
 	}
 
 In your Application class:
