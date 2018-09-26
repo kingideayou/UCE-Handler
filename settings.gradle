@@ -1,1 +1,1 @@
-include ':example_app', ':uce_handler', ':ignore-dummy-module'
+include ':example_app', ':uce_handler', ':ignore-dummy-module', ':uce_handler_no_op'

@@ -33,7 +33,6 @@ public class MyApplication extends Application {
         //Initialize UCE Handler library
         new UCEHandler.Builder(getApplicationContext())
                 .setTrackActivitiesEnabled(true)
-                .addCommaSeparatedEmailAddresses("comma separated email addresses")
                 .build();
     }
 }

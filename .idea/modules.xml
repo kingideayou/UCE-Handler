@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/example_app/example_app.iml" filepath="$PROJECT_DIR$/example_app/example_app.iml" />
       <module fileurl="file://$PROJECT_DIR$/ignore-dummy-module/ignore-dummy-module.iml" filepath="$PROJECT_DIR$/ignore-dummy-module/ignore-dummy-module.iml" />
       <module fileurl="file://$PROJECT_DIR$/uce_handler/uce_handler.iml" filepath="$PROJECT_DIR$/uce_handler/uce_handler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/uce_handler_no_op/uce_handler_no_op.iml" filepath="$PROJECT_DIR$/uce_handler_no_op/uce_handler_no_op.iml" />
     </modules>
   </component>
 </project>

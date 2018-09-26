@@ -42,7 +42,6 @@ public final class UCEHandler {
     private static final String SHARED_PREFERENCES_FIELD_TIMESTAMP = "last_crash_timestamp";
     private static final int MAX_ACTIVITIES_IN_LOG = 50;
     private static final Deque<String> activityLog = new ArrayDeque<>(MAX_ACTIVITIES_IN_LOG);
-    static String COMMA_SEPARATED_EMAIL_ADDRESSES;
     private Application application;
     private boolean isInBackground = true;
     private boolean isBackgroundMode;
@@ -55,7 +54,6 @@ public final class UCEHandler {
         isUCEHEnabled = builder.isUCEHEnabled;
         isTrackActivitiesEnabled = builder.isTrackActivitiesEnabled;
         isBackgroundMode = builder.isBackgroundModeEnabled;
-        COMMA_SEPARATED_EMAIL_ADDRESSES = builder.commaSeparatedEmailAddresses;
         setUCEHandler(builder.context);
     }
 
@@ -222,7 +220,6 @@ public final class UCEHandler {
     public static class Builder {
         private Context context;
         private boolean isUCEHEnabled = true;
-        private String commaSeparatedEmailAddresses;
         private boolean isTrackActivitiesEnabled = false;
         private boolean isBackgroundModeEnabled = true;
 
@@ -242,11 +239,6 @@ public final class UCEHandler {
 
         public Builder setBackgroundModeEnabled(boolean isBackgroundModeEnabled) {
             this.isBackgroundModeEnabled = isBackgroundModeEnabled;
-            return this;
-        }
-
-        public Builder addCommaSeparatedEmailAddresses(String commaSeparatedEmailAddresses) {
-            this.commaSeparatedEmailAddresses = (commaSeparatedEmailAddresses != null) ? commaSeparatedEmailAddresses : "";
             return this;
         }
 
