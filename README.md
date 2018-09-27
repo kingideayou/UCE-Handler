@@ -38,8 +38,8 @@ Project 根目录的 build.gradle 文件:
 Application 或 Module 的 build.gradle 文件:
 
 	dependencies {
-            debugImplementation 'com.github.kingideayou.UCE-Handler:uce_handler:1.5.0'
-	        releaseImplementation 'com.github.kingideayou.UCE-Handler:uce_handler_no_op:1.5.0'
+            debugImplementation 'com.github.kingideayou.UCE-Handler:uce_handler:1.5.1'
+	        releaseImplementation 'com.github.kingideayou.UCE-Handler:uce_handler_no_op:1.5.1'
 	}
 
 ##### 在应用的 Application 类初始化:

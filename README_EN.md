@@ -49,8 +49,8 @@ In your Project's build.gradle file:
 In your Application's or Module's build.gradle file:
 
 	dependencies {
-            debugImplementation 'com.github.kingideayou.UCE-Handler:uce_handler:1.5.0'
-	        releaseImplementation 'com.github.kingideayou.UCE-Handler:uce_handler_no_op:1.5.0'
+            debugImplementation 'com.github.kingideayou.UCE-Handler:uce_handler:1.5.1'
+	        releaseImplementation 'com.github.kingideayou.UCE-Handler:uce_handler_no_op:1.5.1'
 	}
 
 In your Application class:
