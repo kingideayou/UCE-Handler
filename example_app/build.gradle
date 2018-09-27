@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.rohitss.uce_handler"
+        applicationId "com.next.uce_handler"
         minSdkVersion 14
         targetSdkVersion 27
         versionCode 1
@@ -20,9 +20,9 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.0.2'
-//    implementation project(':uce_handler')
+    implementation project(':uce_handler')
 //    implementation project(':uce_handler_no_op')
-    debugImplementation 'com.github.kingideayou.UCE-Handler:uce_handler:1.5.0'
-    releaseImplementation 'com.github.kingideayou.UCE-Handler:uce_handler_no_op:1.5.0'
+//    debugImplementation 'com.github.kingideayou.UCE-Handler:uce_handler:1.5.1'
+//    releaseImplementation 'com.github.kingideayou.UCE-Handler:uce_handler_no_op:1.5.1'
     implementation project(':ignore-dummy-module')
 }

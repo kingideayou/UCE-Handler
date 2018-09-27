@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.rohitss.uceh">
+          package="com.next.uceh">
 
     <application>
         <activity
-            android:name=".UCEDefaultActivity"
+            android:name="com.next.me.next.uceh.UCEDefaultActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:process=":error_activity"/>
     </application>

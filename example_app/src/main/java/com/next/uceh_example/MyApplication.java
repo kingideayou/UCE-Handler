@@ -15,11 +15,11 @@
  *  * limitations under the License.
  *
  */
-package com.rohitss.uceh_example;
+package com.next.uceh_example;
 
 import android.app.Application;
 
-import com.rohitss.uceh.UCEHandler;
+import com.next.uceh.UCEHandler;
 
 /**
  * <b></b>
@@ -33,6 +33,18 @@ public class MyApplication extends Application {
         //Initialize UCE Handler library
         new UCEHandler.Builder(getApplicationContext())
                 .setTrackActivitiesEnabled(true)
+                // 手动处理崩溃信息
+//                .setUCEHCallback(new UCECallback() {
+//                    @Override
+//                    public void exceptionInfo(@Nullable ExceptionInfoBean exceptionInfoBean) {
+//                        Log.e("UCE-Handler", "exceptionInfo...");
+//                    }
+//
+//                    @Override
+//                    public void throwable(@Nullable Throwable throwable) {
+//                        Log.e("UCE-Handler", "throwable...");
+//                    }
+//                })
                 .build();
     }
 }

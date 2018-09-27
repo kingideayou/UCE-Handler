@@ -15,7 +15,7 @@
  *  * limitations under the License.
  *
  */
-package com.rohitss.uceh;
+package com.next.uceh;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;

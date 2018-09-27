@@ -1,4 +1,4 @@
-package com.rohitss.uceh;
+package com.next.uceh;
 
 import android.content.Context;
 
@@ -19,9 +19,15 @@ public class UCEHandler {
         private boolean isUCEHEnabled = true;
         private boolean isTrackActivitiesEnabled = false;
         private boolean isBackgroundModeEnabled = true;
+        private UCECallback mUCECallback = null;
 
         public Builder(Context context) {
             this.context = context;
+        }
+
+        public Builder setUCEHCallback(UCECallback ucehCallback) {
+            this.mUCECallback = ucehCallback;
+            return this;
         }
 
         public Builder setUCEHEnabled(boolean isUCEHEnabled) {

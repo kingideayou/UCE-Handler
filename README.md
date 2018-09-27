@@ -1,43 +1,32 @@
-[![](https://jitpack.io/v/RohitSurwase/UCE-Handler.svg)](https://jitpack.io/#RohitSurwase/UCE-Handler) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![GitHub stars](https://img.shields.io/github/stars/RohitSurwase/UCE-Handler.svg?style=social&label=Star)](https://GitHub.com/RohitSurwase/UCE-Handler/stargazers) 
-
-<!-- [![](https://jitpack.io/v/RohitSurwase/UCE-Handler/month.svg)](https://jitpack.io/#RohitSurwase/UCE-Handler) [![](https://jitpack.io/v/RohitSurwase/UCE-Handler/week.svg)](https://jitpack.io/#RohitSurwase/UCE-Handler) -->
+[![](https://jitpack.io/v/kingideayou/UCE-Handler.svg)](https://jitpack.io/#RohitSurwase/UCE-Handler) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![GitHub stars](https://img.shields.io/github/stars/kingideayou/UCE-Handler.svg?style=social&label=Star)](https://GitHub.com/kingideayou/UCE-Handler/stargazers)
 
 # UCE Handler
-### Android library which lets you take control of Android App's uncaught exceptions. View, Copy, Share, Save and Email exceptions details including other useful info easily.
-Tracking down all exceptions is the crucial part of the development. We could just expect that we have handled all exceptions. But whatever we do, we come across it with the so-called pop-up saying “Unfortunately, App has stopped”, that is why it is called uncaught-exceptions.
-
-Why should you use this library? Read the answer - [Handling Uncaught-Exceptions in Android](https://android.jlelse.eu/handling-uncaught-exceptions-in-android-d818ffb20181)
-
-![Example Image](http://ww1.sinaimg.cn/mw690/6db4aff6gy1fvn1nrp5qnj21905g0qse.jpg)
-![Example Animation](https://github.com/RohitSurwase/UCE-Handler/raw/master/art/uce_feature.png)
-![Example Animation](http://ww1.sinaimg.cn/mw690/6db4aff6gy1fvmyplertdg20ew0pn1kx.gif)
+#### 捕获应用的 UncaughtException，应用崩溃时提供崩溃的类名、方法名、行数、Error Log、Activity 路径、设备信息、应用信息...同时支持复制、分享和保存崩溃信息。方便在开发和测试时使用
 
 ## Features
-* Android App lifecycle aware.
-* Catches all uncaught exceptions gracefully.
-* Displays separate screen with multiple options whenever an App crashes.
-* View, Copy, Share, and Save crash logs easily.
-* Email crash log along with the .txt file with multiple developers/receipients.
-* Completely close the crashed/unstable Application.
+* 监控 App 整个生命周期
+* 优雅捕获所以 UncaughtException
+* 崩溃时直接展示崩溃信息、格式化显示崩溃信息
+* 复制、分享、保存崩溃日志
+* 使用者可以拦截崩溃自行处理[如何配置](#自定义处理崩溃信息)
 
-## Logged Information
+## 提供的崩溃日志信息
+* Crash `ClassName`、`MethodName`、`LineNumber`、`CrashInfo`
 * Device/mobile info.
 * Application info.
 * Crash log.
 * Activity track. //optional
 * All log files are placed in a separate folder.
 
-### Each Log file is named upon App's name so you can identify and distinguish files easily if you have added this library in multiple projects/applications.
+### 示例图片
+![Example Image](http://ww1.sinaimg.cn/mw690/6db4aff6gy1fvn1nrp5qnj21905g0qse.jpg)
+![Example Animation](http://ww1.sinaimg.cn/mw690/6db4aff6gy1fvmyplertdg20ew0pn1kx.gif)
 
-
-## Example
-Download the example app [here](https://github.com/RohitSurwase/UCE-Handler/raw/master/UCE_Handler_Example.apk)
-
-## Getting Started
-Add this library to your Android project and initialize it in your Application class. Additionaly you can add developer's email addresses who will get the email of crash log along with the .txt file attached.
+## 预览效果
+Download the example app [here](https://github.com/kingideayou/UCE-Handler/raw/master/DemoApk)
 
 # Setup
-In your Project's build.gradle file:
+Project 根目录的 build.gradle 文件:
 
 	allprojects {
 		repositories {
@@ -46,56 +35,63 @@ In your Project's build.gradle file:
 		}
 	}
 
-In your Application's or Module's build.gradle file:
+Application 或 Module 的 build.gradle 文件:
 
 	dependencies {
             debugImplementation 'com.github.kingideayou.UCE-Handler:uce_handler:1.5.0'
 	        releaseImplementation 'com.github.kingideayou.UCE-Handler:uce_handler_no_op:1.5.0'
 	}
 
-In your Application class:
+##### 在应用的 Application 类初始化:
 * Initialize library using builder pattern.
-    
+
 		public class MyApplication extends Application {
-		@Override public void onCreate() { 
+		@Override public void onCreate() {
 			...
 			// Initialize UCE_Handler Library
 			new UCEHandler.Builder(this).build();
 		} }
 
-##### Kotlin way of initialization
+##### Kotlin 初始化
 
         UCEHandler.Builder(applicationContext).build()
-	
-##### For those of you who are still using Eclipse + ADT, you need to add UCEDefaultActivity manually in your App's manifest. (As suggested by [Caceresenzo](https://github.com/RohitSurwase/UCE-Handler/issues/2#issuecomment-385262850))
 
-	<application>
-	    ...
-	    <activity
-		android:name="com.rohitss.uceh.UCEDefaultActivity"
-		android:process=":error_activity"/>
-	</application>
+##### 自定义处理崩溃信息
+
+    .setUCEHCallback(new UCECallback() {
+        @Override
+        public void exceptionInfo(@Nullable ExceptionInfoBean exceptionInfoBean) {
+            Log.e("UCE-Handler", "exceptionInfo...");
+        }
+
+        @Override
+        public void throwable(@Nullable Throwable throwable) {
+            Log.e("UCE-Handler", "throwable...");
+        }
+    })
 
 ### Optional Parameters
-##### .setUCEHEnabled(true/false)
-//  default 'true'
- =>  Enable/Disable UCE_Handler.
-##### .setTrackActivitiesEnabled(true/false)
-//  default 'false'
- =>  Choose whether you want to track the flow of activities the user/tester has taken or not.
-##### .setBackgroundModeEnabled(true/false)
-//  default 'true'
- =>  Choose if you want to catch exceptions while app is in background.
-##### .addCommaSeparatedEmailAddresses("abc@gmail.com, pqr@gmail.com,...)
-// default - empty
- =>  Add comma separated email addresses who will receive the crash logs.
 
-#### 'Save Error Log' will work only if your app already has storage permission as library does not ask for it.
+| Optional Parameters | Default | Desc |
+| ------ | ------ | ------ |
+| `setUCEHEnabled(true/false)` | true | Enable/Disable UCE_Handler. |
+| `setTrackActivitiesEnabled(true/false)` | false | Choose whether you want to track the flow of activities the user/tester has taken or not. |
+| `setBackgroundModeEnabled(true/false)` | true | Choose if you want to catch exceptions while app is in background. |
+| `setUCEHCallback(UCECallback)` | null | You can handle catch exception infos yourself. |
+
+#### 注意：「保存异常信息」需要提供读取本地存储空间权限
 
 ## Authors & Contributers
 
 * [**Rohit Surwase**](https://github.com/RohitSurwase) - *Initial work* - [API-Calling-Flow](https://github.com/RohitSurwase/API-Calling-Flow) , [AndroidDesignPatterns](https://github.com/RohitSurwase/AndroidDesignPatterns) , [News App Using Kotlin, MVP](https://github.com/RohitSurwase/News-Kotlin-MVP) ,  [Linkaive - Android App on Play Store](https://play.google.com/store/apps/details?id=com.rohitss.saveme)
+* [**NeXT**](https://juejin.im/user/55f4419360b28e983c150d0e)
+
+## Thanks To
+* [UCE-Handler](https://github.com/RohitSurwase/UCE-Handler)
+* [Recovery](https://github.com/Sunzxyong/Recovery)
+* [leakcanary](https://github.com/square/leakcanary)
 
 ## License
-Copyright © 2018 Rohit Sahebrao Surwase.
+Copyright © 2018 NeXT.
+
 This project is licensed under the Apache License, Version 2.0 - see the [LICENSE.md](LICENSE.md) file for details

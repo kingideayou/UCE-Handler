@@ -15,7 +15,7 @@
  *  * limitations under the License.
  *
  */
-package com.rohitss.uceh;
+package com.next.uceh;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -36,7 +36,7 @@ import java.util.Locale;
 public final class UCEHandler {
     static final String EXTRA_EXCEPTION_INFO = "EXTRA_EXCEPTION_INFO";
     private final static String TAG = "UCEHandler";
-    private static final String UCE_HANDLER_PACKAGE_NAME = "me.next.uceh";
+    private static final String UCE_HANDLER_PACKAGE_NAME = "me.next.me.next.uceh";
     private static final String DEFAULT_HANDLER_PACKAGE_NAME = "com.android.internal.os";
     private static final String SHARED_PREFERENCES_FILE = "uceh_preferences";
     private static final String SHARED_PREFERENCES_FIELD_TIMESTAMP = "last_crash_timestamp";
@@ -51,6 +51,7 @@ public final class UCEHandler {
     private static WeakReference<Activity> lastActivityCreated = new WeakReference<>(null);
 
     private UCEHandler(Builder builder) {
+        mUCECallback = builder.mUCECallback;
         isUCEHEnabled = builder.isUCEHEnabled;
         isTrackActivitiesEnabled = builder.isTrackActivitiesEnabled;
         isBackgroundMode = builder.isBackgroundModeEnabled;
@@ -213,18 +214,20 @@ public final class UCEHandler {
         killCurrentProcess();
     }
 
-    public void setUCECallback(UCECallback UCECallback) {
-        mUCECallback = UCECallback;
-    }
-
     public static class Builder {
         private Context context;
         private boolean isUCEHEnabled = true;
         private boolean isTrackActivitiesEnabled = false;
         private boolean isBackgroundModeEnabled = true;
+        private UCECallback mUCECallback = null;
 
         public Builder(Context context) {
             this.context = context;
+        }
+
+        public Builder setUCEHCallback(UCECallback ucehCallback) {
+            this.mUCECallback = ucehCallback;
+            return this;
         }
 
         public Builder setUCEHEnabled(boolean isUCEHEnabled) {

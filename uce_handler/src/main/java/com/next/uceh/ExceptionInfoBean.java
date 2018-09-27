@@ -1,4 +1,4 @@
-package com.rohitss.uceh;
+package com.next.uceh;
 
 import android.os.Parcel;
 import android.os.Parcelable;
